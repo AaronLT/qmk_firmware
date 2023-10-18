@@ -25,6 +25,7 @@
 api_data/v1
 quantum/version.h
 *.bin
+!compiled_bins/**/*.bin
 *.eep
 *.hex
 *.qmk
