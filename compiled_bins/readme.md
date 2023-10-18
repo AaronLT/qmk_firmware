@@ -18,7 +18,7 @@ This is the initial version that I based off of files in the repo made by `gourd
 		- [N] => Enables/Disables N-key rollover [Default is `Enabled`]
 		- [L] => Activates the Key Lock feature (https://docs.qmk.fm/#/feature_key_lock)
 		- [=] => Opens the Calculator app by sending the `CALC` keycode
-		- [\] => Forces keyboard into bootloader mode for flashing new firmware
+		- [\\] => Forces keyboard into bootloader mode for flashing new firmware
 		- [Rotary press] => Enables/disables RGB [Default is `Enabled`]
 		- [Rotary right/left] => Increase/decrease RGB brightness
 		- [UP / DOWN] => Increase/decrease RGB animation speed
