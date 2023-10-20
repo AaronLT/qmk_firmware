@@ -14,8 +14,72 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "caps_word.h"
 #include QMK_KEYBOARD_H
 #include "rgb_matrix_map.h"
+
+#ifndef ARRAYSIZE
+    #define ARRAYSIZE(arr)  sizeof(arr)/sizeof(arr[0])
+#endif
+
+bool TEST_RGB_IND = false;
+
+RGB get_rgb_values_from_hsv(int hue, int saturation, int value) {
+    HSV hsv = { hue, saturation, value };
+    return hsv_to_rgb(hsv);
+}
+
+enum custom_user_keycodes {
+    TEST_RGB_IND_TOGG = SAFE_RANGE,
+    RGB_COLOR_HOME,
+    RGB_COLOR_WORK
+};
+
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+    switch (keycode) {
+        case TEST_RGB_IND_TOGG:
+            if (record -> event.pressed) {
+                TEST_RGB_IND = !TEST_RGB_IND;
+            }
+            return false;
+        case RGB_COLOR_HOME:
+            if (record -> event.pressed) {
+                rgb_matrix_sethsv(HSV_BURNT_ORANGE);
+            }
+            return false;
+        case RGB_COLOR_WORK:
+            if (record -> event.pressed) {
+                rgb_matrix_sethsv(HSV_PINK_RANGER);
+            }
+            return false;
+        default:
+            return true;
+    }
+}
+
+bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
+    if (host_keyboard_led_state().caps_lock) {
+        for (uint8_t i = 0; i < ARRAYSIZE(LED_LIST_LETTERS); i++) {
+            RGB rgb_value = get_rgb_values_from_hsv(HSV_GREEN);
+            rgb_matrix_set_color(LED_LIST_LETTERS[i], rgb_value.r, rgb_value.g, rgb_value.b);
+        }
+    }
+    if (is_caps_word_on()) {
+        for (uint8_t i = 0; i < ARRAYSIZE(LED_LIST_LETTERS); i++) {
+            RGB rgb_value = get_rgb_values_from_hsv(HSV_BLUE);
+            rgb_matrix_set_color(LED_LIST_LETTERS[i], rgb_value.r, rgb_value.g, rgb_value.b);
+        }
+    }
+    if (keymap_config.no_gui) {
+        RGB rgb_value = get_rgb_values_from_hsv(HSV_RED);
+        rgb_matrix_set_color(LED_LWIN, rgb_value.r, rgb_value.g, rgb_value.b);
+    }
+    if (TEST_RGB_IND) {  // test full colors with this indicator
+        RGB rgb_value = get_rgb_values_from_hsv(HSV_PINK_RANGER);
+        rgb_matrix_set_color_all(rgb_value.r, rgb_value.g, rgb_value.b);
+    }
+    return true;
+}
 
 // clang-format off
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -50,8 +114,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [1] = LAYOUT(
         QK_RBT, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,          RGB_TOG,
-        _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, KC_CALC, _______,          _______,
-        _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, QK_BOOT,            _______,
+        _______, RGB_COLOR_HOME, RGB_COLOR_WORK, _______, _______, _______, _______, _______, _______, _______, _______, _______, KC_CALC, _______,          _______,
+        _______, _______, _______, _______, TEST_RGB_IND_TOGG, _______, _______, _______, _______, _______, _______, _______, _______, QK_BOOT,            _______,
         _______, _______, _______, _______, _______, _______, _______, _______, _______, QK_LOCK, _______, _______,          _______,          _______,
         _______,          _______, _______, _______, _______, _______, NK_TOGG, _______, _______, _______, _______,          _______, RGB_SPI, _______,
         _______, GU_TOGG, _______,                            QK_CLEAR_EEPROM,                            _______, _______, _______, RGB_RMOD, RGB_SPD, RGB_MOD

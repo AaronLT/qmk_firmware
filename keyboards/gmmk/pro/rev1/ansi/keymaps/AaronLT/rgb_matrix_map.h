@@ -19,6 +19,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "color.h"
 #ifdef RGB_MATRIX_ENABLE
 
+// custom HSV colors
+#define HSV_BURNT_ORANGE    15, 255, 140    // default color - home
+#define HSV_PINK_RANGER     230, 234, 140   // default color - work
+
 // RGB LED locations
 enum led_location_map {
     LED_ESC, // 0, ESC, k13
@@ -171,7 +175,7 @@ const uint8_t LED_LIST_NUMROW[] = {
 };
 
 const uint8_t LED_LIST_LETTERS[] = {
-/*    LED_1,
+    LED_1,
     LED_2,
     LED_3,
     LED_4,
@@ -180,7 +184,7 @@ const uint8_t LED_LIST_LETTERS[] = {
     LED_7,
     LED_8,
     LED_9,
-    LED_0, */
+    LED_0,
     LED_Q,
     LED_W,
     LED_E,
@@ -207,36 +211,6 @@ const uint8_t LED_LIST_LETTERS[] = {
     LED_B,
     LED_N,
     LED_M
-};
-
-const uint8_t LED_LIST_NUMPAD[] = {
-    LED_1,
-    LED_2,
-    LED_3,
-    LED_4,
-    LED_5,
-    LED_6,
-    LED_7,
-    LED_8,
-    LED_9,
-    LED_0,
-    LED_MINS,
-    LED_EQL,
-    LED_U,
-    LED_I,
-    LED_O,
-    LED_P,
-    LED_J,
-    LED_K,
-    LED_L,
-    LED_SCLN,
-    LED_ENT,
-    LED_M,
-    LED_COMM,
-    LED_DOT,
-    LED_SLSH,
-    LED_END,
-    LED_RIGHT
 };
 
 const uint8_t LED_SIDE_LEFT[] = {

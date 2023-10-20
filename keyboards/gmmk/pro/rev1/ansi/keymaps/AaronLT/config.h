@@ -28,7 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // Caps Word configuration
 #define DOUBLE_TAP_SHIFT_TURNS_ON_CAPS_WORD
-#define CAPS_WORD_IDLE_TIMEOUT 3000      // Automatically turn off after x milliseconds of idle. 0 to never timeout.
+#define CAPS_WORD_IDLE_TIMEOUT 5000      // Automatically turn off after x milliseconds of idle. 0 to never timeout.
 
 #ifdef RGB_MATRIX_ENABLE
     // disable RGB on USB and timer
