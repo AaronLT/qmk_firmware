@@ -27,7 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //#define TAPPING_TERM_PER_KEY   // only used if you define your own get_tapping_term() function, since tapping term affects more than the tap dance feature
 
 // Caps Word configuration
-#define DOUBLE_TAP_SHIFT_TURNS_ON_CAPS_WORD
+// #define DOUBLE_TAP_SHIFT_TURNS_ON_CAPS_WORD
 #define CAPS_WORD_IDLE_TIMEOUT 5000      // Automatically turn off after x milliseconds of idle. 0 to never timeout.
 
 #ifdef RGB_MATRIX_ENABLE
