@@ -14,23 +14,28 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "caps_word.h"
 #include QMK_KEYBOARD_H
+#include "custom_features/caps_word_extended.h"
 #include "rgb_matrix_map.h"
 
 #ifndef ARRAYSIZE
     #define ARRAYSIZE(arr)  sizeof(arr)/sizeof(arr[0])
 #endif
 
-RGB get_rgb_values_from_hsv(int hue, int saturation, int value) {
-    HSV hsv = { hue, saturation, value };
-    return hsv_to_rgb(hsv);
-}
+enum layer_names {
+    _BASE,
+    _FUNC,
+    _CODE,
+};
 
 enum custom_user_keycodes {
     RGB_COLOR_HOME = SAFE_RANGE,
     RGB_COLOR_WORK,
-    CAPS_WORD_ENABLE,
+    CAPS_WORD_NORMAL,
+    CAMEL_CASE_ENABLE,
+    PASCAL_CASE_ENABLE,
+    SNAKE_CASE_ENABLE,
+    CAPS_SNAKE_CASE_ENABLE,
 };
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
@@ -45,9 +50,29 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 rgb_matrix_sethsv(HSV_PINK_RANGER);
             }
             return false;
-        case CAPS_WORD_ENABLE:
+        case CAPS_WORD_NORMAL:
             if (record -> event.pressed) {
-                caps_word_on();
+                set_caps_word_mode(CWMODE_NORMAL);
+            }
+            return false;
+        case CAMEL_CASE_ENABLE:
+            if (record -> event.pressed) {
+                set_caps_word_mode(CWMODE_CAMEL_CASE);
+            }
+            return false;
+        case PASCAL_CASE_ENABLE:
+            if (record -> event.pressed) {
+                set_caps_word_mode(CWMODE_PASCAL_CASE);
+            }
+            return false;
+        case SNAKE_CASE_ENABLE:
+            if (record -> event.pressed) {
+                set_caps_word_space_sub(KC_UNDERSCORE, false);
+            }
+            return false;
+        case CAPS_SNAKE_CASE_ENABLE:
+            if (record -> event.pressed) {
+                set_caps_word_space_sub(KC_UNDERSCORE, true);
             }
             return false;
         default:
@@ -62,24 +87,42 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
             rgb_matrix_set_color(LED_LIST_LETTERS[i], rgb_value.r, rgb_value.g, rgb_value.b);
         }
     }
-    if (is_caps_word_on()) {
+    if (keymap_config.no_gui) {
+        RGB rgb_value = get_rgb_values_from_hsv(HSV_RED);
+        rgb_matrix_set_color(LED_LWIN, rgb_value.r, rgb_value.g, rgb_value.b);
+    }
+    if (is_caps_word_mode_on(CWMODE_NORMAL)) {
         for (uint8_t i = 0; i < ARRAYSIZE(LED_LIST_LETTERS); i++) {
             RGB rgb_value = get_rgb_values_from_hsv(HSV_BLUE);
             rgb_matrix_set_color(LED_LIST_LETTERS[i], rgb_value.r, rgb_value.g, rgb_value.b);
         }
     }
-    if (keymap_config.no_gui) {
-        RGB rgb_value = get_rgb_values_from_hsv(HSV_RED);
-        rgb_matrix_set_color(LED_LWIN, rgb_value.r, rgb_value.g, rgb_value.b);
+    if (is_caps_word_mode_on(CWMODE_CAMEL_CASE)) {
+        for (uint8_t i = 0; i < ARRAYSIZE(LED_LIST_LETTERS); i++) {
+            RGB rgb_value = get_rgb_values_from_hsv(HSV_WHITE);
+            rgb_matrix_set_color(LED_LIST_LETTERS[i], rgb_value.r, rgb_value.g, rgb_value.b);
+        }
+    }
+    if (is_caps_word_mode_on(CWMODE_PASCAL_CASE)) {
+        for (uint8_t i = 0; i < ARRAYSIZE(LED_LIST_LETTERS); i++) {
+            RGB rgb_value = get_rgb_values_from_hsv(HSV_YELLOW);
+            rgb_matrix_set_color(LED_LIST_LETTERS[i], rgb_value.r, rgb_value.g, rgb_value.b);
+        }
+    }
+    if (is_caps_word_mode_on(CWMODE_SPACE_SUB)) {
+        for (uint8_t i = 0; i < ARRAYSIZE(LED_LIST_LETTERS); i++) {
+            RGB rgb_value = get_rgb_values_from_hsv(HSV_TEAL);
+            rgb_matrix_set_color(LED_LIST_LETTERS[i], rgb_value.r, rgb_value.g, rgb_value.b);
+        }
+    }
+    if (is_caps_word_mode_on(CWMODE_CAPS_SPACE_SUB)) {
+        for (uint8_t i = 0; i < ARRAYSIZE(LED_LIST_LETTERS); i++) {
+            RGB rgb_value = get_rgb_values_from_hsv(HSV_PURPLE);
+            rgb_matrix_set_color(LED_LIST_LETTERS[i], rgb_value.r, rgb_value.g, rgb_value.b);
+        }
     }
     return true;
 }
-
-enum layer_names {
-    _BASE,
-    _FUNC,
-    _CODE,
-};
 
 // clang-format off
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -107,7 +150,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_ESC,  KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,  KC_DEL,          KC_MUTE,
         KC_GRV,  KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_MINS, KC_EQL,  KC_BSPC,          KC_HOME,
         KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_LBRC, KC_RBRC, KC_BSLS,          KC_END,
-        CAPS_WORD_ENABLE, KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,          KC_ENT,           KC_PGUP,
+        CAPS_WORD_NORMAL, KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,          KC_ENT,           KC_PGUP,
         KC_LSFT,          KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH,          KC_RSFT, KC_UP,   KC_PGDN,
         KC_LCTL, KC_LGUI, KC_LALT,                            KC_SPC,                             MO(_FUNC), MO(_CODE),   KC_RCTL, KC_LEFT, KC_DOWN, KC_RGHT
     ),
@@ -123,22 +166,21 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [_CODE] = LAYOUT(
         _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,          _______,
-        _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,          _______,
+        _______, CAMEL_CASE_ENABLE, PASCAL_CASE_ENABLE, SNAKE_CASE_ENABLE, CAPS_SNAKE_CASE_ENABLE, _______, _______, _______, _______, _______, _______, _______, _______, _______,          _______,
         _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,            _______,
         _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,          _______,          _______,
         _______,          _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,          _______, _______, _______,
         _______, _______, _______,                            _______,                            _______, _______, _______, _______, _______, _______
     ),
 
-
 };
 // clang-format on
 
 #if defined(ENCODER_MAP_ENABLE)
 const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
-    [0] = { ENCODER_CCW_CW(KC_VOLD, KC_VOLU) },
-    [1] = { ENCODER_CCW_CW(RGB_VAD, RGB_VAI) },
-    [2] = { ENCODER_CCW_CW(KC_TRNS, KC_TRNS) }
+    [_BASE] = { ENCODER_CCW_CW(KC_VOLD, KC_VOLU) },
+    [_FUNC] = { ENCODER_CCW_CW(RGB_VAD, RGB_VAI) },
+    [_CODE] = { ENCODER_CCW_CW(KC_TRNS, KC_TRNS) },
 };
 #endif
 

@@ -23,6 +23,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define HSV_BURNT_ORANGE    15, 255, 140    // default color - home
 #define HSV_PINK_RANGER     230, 234, 140   // default color - work
 
+RGB get_rgb_values_from_hsv(int hue, int saturation, int value) {
+    HSV hsv = { hue, saturation, value };
+    return hsv_to_rgb(hsv);
+}
+
 // RGB LED locations
 enum led_location_map {
     LED_ESC, // 0, ESC, k13
